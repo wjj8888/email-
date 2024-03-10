@@ -1,0 +1,57 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+import os
+
+# Configure email server information
+mail_host = "smtp.qq.com"   # Set up server
+mail_user = "694798056"     # user name
+mail_pass = "gfgwmfbzmutebajc"  # Password
+
+# Configure sender and recipient information
+sender = 'tk**@Gmail.com' # Sender's email
+receivers = ['tk**@Gmail.com'']  # Receive emails, can be set to multiple email addresses
+
+
+def message_config():
+    """
+    Configure email information
+    :return: Message Object
+    """
+    #Third party SMTP service
+    content = MIMEText('Python course data, please check carefully')
+    message = MIMEMultipart() # Multiple MIME objects
+    message.attach(content)  # Add content
+    message['From'] = Header("Andy", 'utf-8') # From
+    message['To']   = Header("Mr wu, 'utf-8')  # recipients
+    message['Subject'] = Header('Python course data, 'utf-8') # theme
+    # Add Excel type attachment
+    file_name = 'Python course data,2024-3-10.xlsx' # file name
+    file_path = os.path.join(file_name)        # File path
+    xlsx = MIMEApplication(open(file_path, 'rb').read())  # Open Excel and read the Excel file
+    xlsx["Content-Type"] = 'application/octet-stream'     # Set Content Type
+    xlsx.add_header('Content-Disposition', 'attachment', filename=file_name) # Add to header information
+    message.attach(xlsx)
+    return message
+
+def send_mail(message):
+    """
+    Sending emails
+    :param message: Message Object
+    :return: None
+    """
+    try:
+        smtpObj = smtplib.SMTP_SSL(mail_host) # Connect to the email server using SSL
+        smtpObj.login(mail_user, mail_pass)   # logon server
+        smtpObj.sendmail(sender, receivers, message.as_string()) # Sending emails
+        print("邮件发送成功")
+    except Exception as e:
+        print(e)
+
+if __name__ == "__main__":
+    print("Start execution")
+    message = message_config() #Calling configuration methods
+    send_mail(message)         # Sending emails
+    print("end of execution")
